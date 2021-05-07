@@ -700,6 +700,18 @@
 /processorParam:TextureFormat=Color
 /build:UI Stuff/Buttons/ConvoyShip1.png
 
+#begin UI Stuff/Buttons/gatheringStation Button.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:UI Stuff/Buttons/gatheringStation Button.png
+
 #begin UI Stuff/Buttons/High Scores Button.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -783,6 +795,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:UI Stuff/Buttons/Trade Button.png
+
+#begin UI Stuff/Buttons/tradeStation Button.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:UI Stuff/Buttons/tradeStation Button.png
 
 #begin UI Stuff/Buttons/Tutorial Button.png
 /importer:TextureImporter

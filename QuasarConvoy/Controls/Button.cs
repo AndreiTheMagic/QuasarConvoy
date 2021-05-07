@@ -27,7 +27,7 @@ namespace QuasarConvoy.Controls
 
         private SoundEffect soundEffect;
 
-        private float scale;
+        public float scale;
 
         private int state, SoundLevel;
         
@@ -135,7 +135,7 @@ namespace QuasarConvoy.Controls
             instance.IsLooped = false;
             if (state == 0)
             {
-                if (mouseRectangle.Intersects(Rectangle))
+                if (mouseRectangle.Intersects(Rectangle) && activeButton)
                 {
                     instance.Play();
                     state = 1;
