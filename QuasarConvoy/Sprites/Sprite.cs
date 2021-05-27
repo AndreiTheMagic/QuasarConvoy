@@ -50,15 +50,6 @@ namespace QuasarConvoy.Sprites
 
         public float Layer { set; get; }
 
-        /*
-        public virtual Rectangle Collisionbox
-        {
-            get
-            {
-                return new Rectangle((int)Position.X, (int)Position.Y, _texture.Width*(int)scale, _texture.Height*(int)scale);
-            }
-        }*/
-
         public Vector2 Origin {set; get; }
 
         #endregion
