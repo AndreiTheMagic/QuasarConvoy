@@ -123,7 +123,7 @@ namespace QuasarConvoy.Entities
                         float Y = float.Parse(dBManager.SelectElement("SELECT PositionY FROM [Ships] WHERE ID = " + missing.ToString()));
                         float r = float.Parse(dBManager.SelectElement("SELECT Rotation FROM [Ships] WHERE ID = " + missing.ToString()));
                         int model = int.Parse(dBManager.SelectElement("SELECT ID_Model FROM [Ships] WHERE ID = " + missing.ToString()));
-                        Ship ship = gameState.CreateShip(model, X, Y, r, missing);
+                        Ship ship = gameState.CreateShipOld(model, X, Y, r, missing);
                         gameState._convoy.Add(ship);
                         gameState._sprites.Add(ship);
                         gameState.UI.Add(new QuasarConvoy.Controls.HealthBar(ship, Color.Green, new Vector2(100, 14), gameState.graphicsDevice));

@@ -20,6 +20,7 @@ namespace QuasarConvoy.Entities.Ships
 
         public PirateSniper(ContentManager content) : base(content)
         {
+            model = 7;
             _texture = content.Load<Texture2D>("PirateSniper");
             AngSpeed = 0.07f;
             scale = 0.1f;

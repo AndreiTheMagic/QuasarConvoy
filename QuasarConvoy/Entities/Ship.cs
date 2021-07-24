@@ -16,12 +16,16 @@ namespace QuasarConvoy.Entities
         //bool isAnimated = false;
 
         //bool isControlled = false;
+        public int model;
         protected float shootTimer;
         public bool hasHealthbar = false;
         protected float ShootInterval { set; get; }
         public bool IsControlled { set; get; }
         public int Integrity { set; get; }
         public int MaxIntegrity { set; get; }
+
+        public int Capacity;
+        public List<ItemData> Inventory;
         public bool Friendly { set; get; }
         public List<Ship> blacklist;
 
@@ -35,6 +39,12 @@ namespace QuasarConvoy.Entities
 
         public CombatManager CombatManager = null;
         public Ship(ContentManager content):base(content)
+        {
+            _content = content;
+            scale = 0.3f;
+            IsRemoved = false;
+        }
+        private Ship()
         {
             scale = 0.3f;
             IsRemoved = false;

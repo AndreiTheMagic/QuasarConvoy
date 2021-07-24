@@ -11,6 +11,7 @@ namespace QuasarConvoy.Entities.Planets
     {
         public Dry(ContentManager content):base(content)
         {
+            Name = "DessertPlanet";
             _sprite = new PlanetSprite(content.Load<Texture2D>("DessertPlanet"));
             Type = "dessert";
             Size = 1.2f;

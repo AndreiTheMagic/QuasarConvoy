@@ -59,7 +59,7 @@ namespace QuasarConvoy.States
             if (check != 1)
             {
                 activeGame = true;
-                game.GameState = new GameState(game, graphicsDevice, contentManager, 1);
+                game.GameState = new GameState(game, graphicsDevice, contentManager, "save.xml");
             }
             else activeGame = false;
 
@@ -254,7 +254,7 @@ namespace QuasarConvoy.States
                 query = "INSERT INTO [Ships] (PositionX, PositionY, InConvoy, ID_Model, Rotation, SaveID) VALUES (21600, -10700, 1, 2, 0, 1)";
                 dBManager.QueryIUD(query);
 
-                game.GameState = new GameState(game, graphicsDevice, contentManager, 1);
+                game.GameState = new GameState(game, graphicsDevice, contentManager, "save.xml");
                 game.ChangeStates(game.GameState);
             }
         }

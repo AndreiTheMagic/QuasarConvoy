@@ -126,6 +126,7 @@ namespace QuasarConvoy.States
                 if (int.Parse(dBManager.SelectElement("SELECT HighScore FROM [User] Where ID = " + userid)) < currentCurrency)
                     dBManager.QueryIUD("UPDATE [User] SET HighScore = " + currentCurrency.ToString());
             }
+            game.GameState.Save();
             game.Exit();
         }
 

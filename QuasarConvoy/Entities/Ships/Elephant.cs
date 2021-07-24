@@ -17,6 +17,7 @@ namespace QuasarConvoy.Entities.Ships
         private int battleDistance;
         public Elephant(ContentManager contentManager):base(contentManager)
         {
+            model = 4;
             _texture = contentManager.Load<Texture2D>("elephant");
             AngSpeed = 0.05f;
             SpeedCap = 6f;

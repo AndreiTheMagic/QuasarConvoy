@@ -17,6 +17,8 @@ namespace QuasarConvoy.Sprites
     {
         #region Fields
 
+        protected ContentManager _content;
+
         public float rott=0f;
 
         protected Vector2 _position;
@@ -95,6 +97,8 @@ namespace QuasarConvoy.Sprites
 
 
         public Sprite(ContentManager Content)
+        { }
+        public Sprite()
         { }
 
         public Sprite(Texture2D texture)

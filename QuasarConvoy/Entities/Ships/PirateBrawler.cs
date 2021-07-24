@@ -17,6 +17,7 @@ namespace QuasarConvoy.Entities.Ships
         private int battleDistance;
         public PirateBrawler(ContentManager content) : base(content)
         {
+            model = 6;
             _texture = content.Load<Texture2D>("PirateBrawler");
             AngSpeed = 0.07f;
             scale = 0.1f;

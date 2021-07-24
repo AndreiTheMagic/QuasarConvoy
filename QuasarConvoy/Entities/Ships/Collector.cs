@@ -16,6 +16,7 @@ namespace QuasarConvoy.Entities.Ships
         
         public Collector(ContentManager content):base(content)
         {
+            model = 3;
             _texture = content.Load<Texture2D>("collector");
             AngSpeed = 0.06f;
             SpeedCap = 9f;//ideal 10f

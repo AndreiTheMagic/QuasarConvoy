@@ -13,6 +13,7 @@ namespace QuasarConvoy.Entities.Ships
     {
         public Mule1(ContentManager content):base(content)
         {
+            model = 2;
             _texture = content.Load<Texture2D>("mule");
             AngSpeed = 0.05f;
             SpeedCap = 4f;

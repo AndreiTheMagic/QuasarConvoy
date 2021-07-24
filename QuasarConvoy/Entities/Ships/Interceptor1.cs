@@ -15,6 +15,7 @@ namespace QuasarConvoy.Entities.Ships
         int battleDistance = 300;
         public Interceptor1(ContentManager content):base(content)
         {
+            model = 1;
             _texture = content.Load<Texture2D>("interceptor");
             AngSpeed = 0.07f;
             SpeedCap = 10f;//ideal 10f

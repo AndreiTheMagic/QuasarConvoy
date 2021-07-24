@@ -123,6 +123,11 @@ namespace QuasarConvoy.Sprites
         {
             Layer = 0.2f;
         }
+
+        protected SpriteMoving()
+        {
+            Layer = 0.2f;
+        }
         public override void Draw(GameTime gameTime,SpriteBatch spriteBatch)
         {
             if (_texture != null)

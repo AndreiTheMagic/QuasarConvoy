@@ -15,6 +15,8 @@ using System;
 using System.Text;
 using QuasarConvoy.Entities.Planets;
 using System.Linq;
+using System.IO;
+using System.Xml.Serialization;
 
 namespace QuasarConvoy.States
 {
@@ -27,7 +29,6 @@ namespace QuasarConvoy.States
         private SpriteFont font;
 
 
-        private string currency;
         private Vector2 currencyPos;
 
 
@@ -44,6 +45,8 @@ namespace QuasarConvoy.States
         private int ver = 0;
 
         public GraphicsDevice Graphics;
+
+        public SaveManager saveManager;
 
         SpriteFont _font;
         private Camera _camera;
@@ -99,67 +102,48 @@ namespace QuasarConvoy.States
             return _player.ControlledShip;
         }
         #endregion
-        public GameState(Game1 _game, GraphicsDevice _graphicsDevice, ContentManager _contentManager, int save):base(_game,_graphicsDevice,_contentManager)
+        public GameState(Game1 _game, GraphicsDevice _graphicsDevice, ContentManager _contentManager, string saveName):base(_game,_graphicsDevice,_contentManager)
         {
             float width = _graphicsDevice.PresentationParameters.BackBufferWidth;
             float height = _graphicsDevice.PresentationParameters.BackBufferHeight;
 
-            saveID = save;
+            if(saveName!=null)
+                saveManager = new SaveManager(saveName);
+
             font = _contentManager.Load<SpriteFont>("Fonts/Font");
 
             Graphics = _graphicsDevice;
             dBManager = new DBManager();
+            /*
             query = "SELECT Currency FROM [Saves] WHERE ID = 1";
 
             long result = Convert.ToInt64(dBManager.SelectElement(query));
 
-            /*
-            int key; string unitPrefix;
-            for (key = 0; key <= 6 && ((int)(result / Math.Pow(10, 3 * key)) != 0); key++) ;
-            key--;
-            switch (key)
-            {
-                case 1:
-                    unitPrefix = " k";
-                    break;
-                case 2:
-                    unitPrefix = " m";
-                    break;
-                case 3:
-                    unitPrefix = " b";
-                    break;
-                case 4:
-                    unitPrefix = " g";
-                    break;
-                case 5:
-                    unitPrefix = " t";
-                    break;
-                case 6:
-                    unitPrefix = " t";
-                    break;
-                default:
-                    unitPrefix = " ";
-                    break;
-            }
-            long putere = Convert.ToInt64(Math.Pow(10, 3 * key));*/
-            currency = result + " CC";
+            currencyDisplay.value = result.ToString();*/
+            _planets = new List<Planet>();
+            _convoy = new List<Ship>();
+            _enemies = new List<Ship>();
+
+            Load();
             currencyPos = new Vector2((int)(3 * width) / 4, (int)(height / 16));
 
 
             //_graphics = new GraphicsDeviceManager(this);
 
-            _planets = new List<Planet>();
-
+            
+            /*
             for(int i=1;i<=dBManager.SelectColumnFrom("[Planets]","ID").Count;i++)
             {
-                Planet plan = new Planet(contentManager.Load<Texture2D>(dBManager.SelectElement("SELECT Name FROM [Planets] WHERE ID=" + i.ToString())));
+                string name= dBManager.SelectElement("SELECT Name FROM [Planets] WHERE ID=" + i.ToString());
+                Planet plan = new Planet(contentManager.Load<Texture2D>(name));
+                plan.Name = name;
                 float X = float.Parse(dBManager.SelectElement("SELECT PositionX FROM [Planets] WHERE ID = " + i.ToString()));
                 float Y = float.Parse(dBManager.SelectElement("SELECT PositionY FROM [Planets] WHERE ID = " + i.ToString()));
                 plan.Position = new Vector2(X, Y);
                 plan.Size = float.Parse(dBManager.SelectElement("SELECT Size FROM [Planets] WHERE ID = " + i.ToString()));
                 plan.ID = i;
                 _planets.Add(plan);
-            }
+            }*/
 
             _stations = new List<TradeStation>();
 
@@ -169,7 +153,7 @@ namespace QuasarConvoy.States
             LoadContent(_graphicsDevice,_contentManager);
         }
 
-        public Ship CreateShip(int model, float x, float y, float rot ,int id)
+        public Ship CreateShipOld(int model, float x, float y, float rot ,int id)
         {
             Ship ship = null;
             switch(model)
@@ -229,6 +213,65 @@ namespace QuasarConvoy.States
             return ship;
         }
 
+        public Ship CreateShip(ShipData s)
+        {
+            Ship ship = null;
+            switch (s.ModelID)
+            {
+                case 1:
+                    {
+                        ship = new Interceptor1(contentManager)
+                        {
+                            CombatManager = _combatManager
+                        };
+                        break;
+                    }
+                case 2:
+                    {
+                        ship = new Mule1(contentManager);
+                        break;
+                    }
+                case 3:
+                    {
+                        ship = new Collector(contentManager)
+                        {
+                            CombatManager = _combatManager
+                        };
+                        break;
+                    }
+                case 4:
+                    {
+                        ship = new Elephant(contentManager);
+                        break;
+                    }
+                case 5:
+                    {
+                        ship = new Unicorn(contentManager);
+                        break;
+                    }
+                case 6:
+                    {
+                        ship = new PirateSniper(contentManager)
+                        {
+                            CombatManager = _combatManager
+                        };
+                        break;
+                    }
+                case 7:
+                    {
+                        ship = new PirateBrawler(contentManager);
+                        break;
+                    }
+                default:
+                    {
+                        break;
+                    }
+            }
+            ship.Position = s.Position;
+            ship.Rotation = s.Rotation;
+            return ship;
+        }
+
         protected void LoadContent(GraphicsDevice graphicsDevice, ContentManager Content)
         {
             _spriteBatch = new SpriteBatch(graphicsDevice);
@@ -247,10 +290,7 @@ namespace QuasarConvoy.States
 
             _combatManager = new CombatManager(Content);
 
-            _sprites = new List<Sprite>
-            {
-                
-            };
+            _sprites = new List<Sprite>();
 
             foreach(var plan in _planets)
             {
@@ -266,39 +306,23 @@ namespace QuasarConvoy.States
             }
 
             int indContr = 0;
-            _convoy = new List<Ship>();
-            for (int i = 1; i <= dBManager.SelectColumnFrom("[Ships]", "ID").Count; i++)
+
+            /*for (int i = 1; i <= dBManager.SelectColumnFrom("[Ships]", "ID").Count; i++)
             {
                 if(int.Parse(dBManager.SelectElement("SELECT COUNT(*) FROM [Ships] WHERE ID = " + i.ToString()))!=0)
-                if (int.Parse(dBManager.SelectElement("SELECT SaveID FROM [Ships] WHERE ID = " + i.ToString())) == saveID)
+                if (int.Parse(dBManager.SelectElement("SELECT SaveID FROM [Ships] WHERE ID = " + i.ToString())) == 1)
                 {
                     float X = float.Parse(dBManager.SelectElement("SELECT PositionX FROM [Ships] WHERE ID = " + i.ToString()));
                     float Y = float.Parse(dBManager.SelectElement("SELECT PositionY FROM [Ships] WHERE ID = " + i.ToString()));
                     float r = float.Parse(dBManager.SelectElement("SELECT Rotation FROM [Ships] WHERE ID = " + i.ToString()));
                     int model = int.Parse(dBManager.SelectElement("SELECT ID_Model FROM [Ships] WHERE ID = " + i.ToString()));
-                    _convoy.Add(CreateShip(model, X, Y, r, i));
+                    _convoy.Add(CreateShipOld(model, X, Y, r, i));
                     if(i.ToString()==dBManager.SelectElement("SELECT ShipID FROM [Saves] Where ID = "+ saveID.ToString()))
                     {
                         indContr=_convoy.Count-1;
                     }
                 }
-            }
-
-            _enemies = new List<Ship>()
-            {
-                /*
-                new PirateSniper(Content)
-                {
-                    CombatManager=_combatManager,
-                    Position=spawnPos+new Vector2(400,600),
-                },
-                /*
-                new PirateBrawler(Content)
-                {
-                    CombatManager=_combatManager,
-                    Position=spawnPos+new Vector2(400,400),
-                }*/
-            };
+            }*/
 
 
             UI = new List<Component>();
@@ -401,6 +425,59 @@ namespace QuasarConvoy.States
                 }
             }
         }
+
+        #region Save+Load game
+        public void Save()
+        {
+            List<ShipData> convoyData = new List<ShipData>();
+            foreach (var s in _convoy)
+                convoyData.Add(new ShipData(s));
+
+            List<ShipData> enemiesData = new List<ShipData>();
+            foreach (var s in _enemies)
+                enemiesData.Add(new ShipData(s));
+
+            List<PlanetData> planetData = new List<PlanetData>();
+            foreach (var s in _planets)
+                planetData.Add(new PlanetData(s));
+            Save save = new Save()
+            {
+                convoy = convoyData,
+                enemy = enemiesData,
+                planets = planetData,
+                currency = Convert.ToInt32(currencyDisplay.value),
+            };
+
+            saveManager.Save(save);
+            
+        }
+
+        public void Load()
+        {
+            if(!File.Exists(saveManager.saveName))
+            {
+                //CreateNewGame();
+                //Save();
+            }
+            Save save = saveManager.Load();
+            foreach (var s in save.convoy)
+                _convoy.Add(CreateShip(s));
+            foreach (var s in save.enemy)
+                _enemies.Add(CreateShip(s));
+            
+            foreach(var p in save.planets)
+            {
+                //create planet
+                Planet plan = new Planet(contentManager.Load<Texture2D>(p.Name));
+                plan.Position = p.Position;
+                plan.Size = p.Size;
+                plan.Name = p.Name;
+                plan.Inventory = p.Inventory;
+                _planets.Add(plan);
+            }
+            currencyDisplay.value = save.currency.ToString();
+        }
+        #endregion
         private void ShipUpdate(Ship sprite, GameTime gameTime, List<Ship> bl)
         {
             if (!sprite.IsControlled)
@@ -415,9 +492,9 @@ namespace QuasarConvoy.States
         public override void Update(GameTime gameTime)
         {
             StateControl();
-            query = "SELECT Currency FROM [Saves] WHERE ID = " + saveID;
+            query = "SELECT Currency FROM [Saves] WHERE ID = 1";
             int result = int.Parse(dBManager.SelectElement(query));
-            currencyDisplay.value = result + " CC";
+            currencyDisplay.value = result.ToString();
             //cleo upp
            
 
@@ -512,7 +589,7 @@ namespace QuasarConvoy.States
             _spriteBatch.End();
             _spriteBatch.Begin();
 
-            _spriteBatch.DrawString(font, currencyDisplay.value, new Vector2(currencyDisplay.x, currencyDisplay.y), Color.White);
+            _spriteBatch.DrawString(font, currencyDisplay.value + " CC", new Vector2(currencyDisplay.x, currencyDisplay.y), Color.White);
             
             _spriteBatch.DrawString(_font,
                 string.Format("posX={0} posY={1}",

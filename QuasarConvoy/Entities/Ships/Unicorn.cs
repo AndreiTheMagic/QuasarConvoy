@@ -13,6 +13,7 @@ namespace QuasarConvoy.Entities.Ships
     {
         public Unicorn(ContentManager contentManager):base(contentManager)
         {
+            model = 5;
             _texture = contentManager.Load<Texture2D>("unicorn");
             AngSpeed = 0.1f;
             SpeedCap = 12f;
